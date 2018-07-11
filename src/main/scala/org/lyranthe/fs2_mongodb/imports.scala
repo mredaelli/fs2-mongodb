@@ -3,7 +3,7 @@ package org.lyranthe.fs2_mongodb
 import com.mongodb.async.client.{MongoCollection, MongoIterable}
 import com.mongodb.async.{AsyncBatchCursor, SingleResultCallback}
 import fs2._
-import cats.effect.Async
+import cats.effect.{Async, Resource}
 import cats.implicits._
 import com.mongodb.bulk.BulkWriteResult
 import com.mongodb.client.model.WriteModel
@@ -83,9 +83,9 @@ object imports {
       }
     }
 
-    def stream[F[_]: Async]: Stream[F, B] = {
-      Stream.bracket(asyncBatchCursor[F])(iterate[F], closeCursor[F])
-    }
+    def stream[F[_]: Async]: Stream[F, B] =
+      Stream.resource(Resource.make(asyncBatchCursor[F])(closeCursor[F]))
+        .flatMap(iterate[F])
   }
 
   implicit class MongoCollectionSyntax[A](collection: MongoCollection[A]) {
