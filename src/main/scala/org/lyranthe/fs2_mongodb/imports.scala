@@ -6,7 +6,7 @@ import fs2._
 import cats.effect.{Async, Resource}
 import cats.implicits._
 import com.mongodb.bulk.BulkWriteResult
-import com.mongodb.client.model.WriteModel
+import com.mongodb.client.model.{BulkWriteOptions, WriteModel}
 import com.mongodb.client.result.UpdateResult
 import org.bson.conversions.Bson
 
@@ -95,6 +95,13 @@ object imports {
 
 class MongoCollectionEffect[F[_], A](val underlying: MongoCollection[A]) extends AnyVal {
   import imports.AsyncToMongo
+
+  def bulkWrite(requests: List[WriteModel[A]], bulkWriteOptions: BulkWriteOptions)(implicit F: Async[F]): F[BulkWriteResult] = {
+    Async[F]
+      .async[BulkWriteResult] { cb =>
+      underlying.bulkWrite(requests.asJava, bulkWriteOptions, cb.toMongo)
+    }
+  }
 
   def bulkWrite(requests: List[WriteModel[A]])(implicit F: Async[F]): F[BulkWriteResult] = {
     Async[F]
