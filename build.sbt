@@ -6,8 +6,8 @@ organization := "org.lyranthe"
 
 name := "fs2-mongodb"
 
-libraryDependencies += "org.mongodb" % "mongodb-driver-async" % "3.6.3"
-libraryDependencies += "co.fs2"      %% "fs2-core"            % "1.0.0-M1"
+libraryDependencies += "org.mongodb" % "mongodb-driver-async" % "3.8.2"
+libraryDependencies += "co.fs2"      %% "fs2-core"            % "1.0.0-M5"
 
 enablePlugins(GitVersioning)
 
